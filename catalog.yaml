@@ -1,0 +1,6 @@
+skills:
+  - name: evaluar-test-case
+    description: Skill dedicado a evaluar la calidad y completitud de especificaciones de casos de prueba, verificando que cubran escenarios positivos, negativos, límites y criterios de aceptación
+    version: 1.0.0
+    status: active
+    path: evaluar-test-case
