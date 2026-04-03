@@ -1,0 +1,26 @@
+{
+    "name": "evaluar_test_case_gitlab",
+    "tools": [
+        {
+            "name": "get_gitlab_test_case",
+            "description": "Obtiene la descripción de un issue de GitLab para evaluar su calidad como caso de prueba.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "type": "integer",
+                        "description": "El ID numérico del proyecto en GitLab."
+                    },
+                    "issue_id": {
+                        "type": "integer",
+                        "description": "El ID (iid) del issue dentro del proyecto."
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "issue_id"
+                ]
+            }
+        }
+    ]
+}
