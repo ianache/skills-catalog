@@ -3,7 +3,7 @@ skills:
     description: Skill dedicado a evaluar la calidad y completitud de especificaciones de casos de prueba, verificando que cubran escenarios positivos, negativos, límites y criterios de aceptación
     version: 1.0.0
     status: active
-    path: evaluar-test-case
+    path: evaluar_test_case
   - name: calculator
     description: Skill dedicado a realizar operaciones matematicas basicas
     version: 1.0.0

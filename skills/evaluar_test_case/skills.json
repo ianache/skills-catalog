@@ -2,7 +2,7 @@
     "name": "evaluar_test_case_gitlab",
     "tools": [
         {
-            "name": "get_gitlab_test_case",
+            "name": "get_testcase",
             "description": "Obtiene la descripción de un issue de GitLab para evaluar su calidad como caso de prueba.",
             "input_schema": {
                 "type": "object",

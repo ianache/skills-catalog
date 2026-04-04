@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 GitLab Issue Client for Test Case Evaluation
@@ -10,11 +11,24 @@ import os
 import sys
 from typing import Optional, Dict, Any, List
 from dataclasses import dataclass
+import logging
+
+log_format = "%(asctime)s - %(levelname)s - [%(filename)s:%(lineno)d] - %(message)s"
+logging.basicConfig(
+    level=logging.INFO,
+    format=log_format,
+    datefmt="%Y-%m-%d %H:%M:%S",
+    handlers=[
+        logging.StreamHandler(sys.stdout) # Asegura que salgan por consola
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 try:
     import requests
 except ImportError:
-    print("Error: requests library is required. Install with: pip install requests")
+    logger.error("Requests library is required. Install with: pip install requests")
     sys.exit(1)
 
 
