@@ -1,0 +1,79 @@
+{
+  "name": "calculator",
+  "version": "1.0.0",
+  "description": "Basic arithmetic operations calculator",
+  "tools": [
+    {
+      "name": "add",
+      "description": "Add two numbers together",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "number",
+            "description": "First number"
+          },
+          "b": {
+            "type": "number",
+            "description": "Second number"
+          }
+        },
+        "required": ["a", "b"]
+      }
+    },
+    {
+      "name": "subtract",
+      "description": "Subtract the second number from the first",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "number",
+            "description": "First number"
+          },
+          "b": {
+            "type": "number",
+            "description": "Second number"
+          }
+        },
+        "required": ["a", "b"]
+      }
+    },
+    {
+      "name": "multiply",
+      "description": "Multiply two numbers",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "number",
+            "description": "First number"
+          },
+          "b": {
+            "type": "number",
+            "description": "Second number"
+          }
+        },
+        "required": ["a", "b"]
+      }
+    },
+    {
+      "name": "divide",
+      "description": "Divide the first number by the second",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "a": {
+            "type": "number",
+            "description": "Dividend"
+          },
+          "b": {
+            "type": "number",
+            "description": "Divisor"
+          }
+        },
+        "required": ["a", "b"]
+      }
+    }
+  ]
+}
