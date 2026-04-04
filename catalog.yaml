@@ -4,3 +4,8 @@ skills:
     version: 1.0.0
     status: active
     path: evaluar-test-case
+  - name: calculator
+    description: Skill dedicado a realizar operaciones matematicas basicas
+    version: 1.0.0
+    status: active
+    path: calculator
