@@ -4,10 +4,12 @@ import importlib.util
 import sys
 from typing import Dict, Any, List, Optional
 from pathlib import Path
+from artifact_manager import ArtifactManager
 
 class ToolExecutor:
     def __init__(self, skills: List[Any]):
         self.tool_map: Dict[str, Dict[str, Any]] = {}
+        self.artifact_manager = ArtifactManager()
         for skill in skills:
             for tool in skill.tools:
                 tool_name = tool["name"]
@@ -40,13 +42,20 @@ class ToolExecutor:
         script_path = info["script_path"]
         
         if script_path.suffix == ".py":
-            return self._execute_python(script_path, args)
+            result = self._execute_python(script_path, args)
         elif script_path.suffix == ".js":
-            return self._execute_subprocess(["node", str(script_path)], args)
+            result = self._execute_subprocess(["node", str(script_path)], args)
         elif script_path.suffix == ".sh":
-            return self._execute_subprocess(["bash", str(script_path)], args)
+            result = self._execute_subprocess(["bash", str(script_path)], args)
         else:
             raise ValueError(f"Unsupported script type: {script_path.suffix}")
+        
+        # Patrón Claim Check: Guardar si es pesado o artefacto final
+        # EXCEPCIÓN: 'read_artifact' no debe ser interceptado para evitar bucles recursivos
+        if tool_name == "read_artifact":
+            return result
+            
+        return self.artifact_manager.save_if_needed(tool_name, result)
 
     def _execute_python(self, script_path: Path, args: Dict[str, Any]) -> Any:
         module_name = script_path.stem

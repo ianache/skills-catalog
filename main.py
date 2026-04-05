@@ -1,9 +1,14 @@
 import os
 import json
 import litellm
+import redis
+import warnings
+warnings.filterwarnings("ignore") # Suprimir warnings de pydantic/litellm
+
 from dotenv import load_dotenv
 from skill_loader import load_skills
 from tool_executor import ToolExecutor
+from event_interceptor import EventInterceptor
 from typing import List, Dict, Any
 
 # Guardar captura del entorno inicial para respetar variables del shell
@@ -12,11 +17,11 @@ initial_env = os.environ.copy()
 # Cargar .env sin sobrescribir variables ya definidas en el entorno
 load_dotenv(override=False)
 
-# Deshabilitar telemetría de litellm si se desea
-os.environ["LITELLM_LOG"] = "INFO"
+# Configurar logs de litellm
+os.environ["LITELLM_LOG"] = "WARNING"
 
 class SkillAgent:
-    def __init__(self, skills_dir: str = None, model: str = None, provider: str = None):
+    def __init__(self, skills_dir: str = None, model: str = None, provider: str = None, tenant_id: str = None, session_id: str = None):
         self.skills_dir = skills_dir or os.getenv("SKILLS_DIR", "skills")
         self.provider = provider or os.getenv("LLM_PROVIDER", "gemini")
         self.raw_model = model or os.getenv("LLM_MODEL", "gemini-2.0-flash")
@@ -39,6 +44,11 @@ class SkillAgent:
                 instructions = self._resolve_references(skill.instructions)
                 self.system_prompt += f"\n\nInstrucciones para el skill '{skill.name}':\n{instructions}"
         
+        self.system_prompt += "\n\nREGLAS DE ARTEFACTOS (CLAIM CHECK):"
+        self.system_prompt += "\n1. Si el resultado de una herramienta indica que se ha generado un artefacto (ej: 📚💎 Se ha generado un artefacto con referencia 'agent_artifacts:uuid'), NO intentes adivinar el contenido."
+        self.system_prompt += "\n2. Si necesitas la información de ese artefacto para responder, utiliza SIEMPRE la herramienta 'read_artifact' pasando el ID extraído de la referencia."
+        self.system_prompt += "\n3. Cuando respondas al usuario sobre un artefacto, incluye siempre la frase exacta: 📚💎 Se ha generado un artefacto con referencia 'agent_artifacts:uuid'."
+        
         # Prepare tools in OpenAI format (standard for LiteLLM)
         self.tools = []
         for skill in self.skills:
@@ -52,7 +62,17 @@ class SkillAgent:
                     }
                 })
         
+        # DEBUG: Guardar el prompt final para auditoría
+        try:
+            with open("debug_system_prompt.txt", "w", encoding="utf-8") as f:
+                f.write(self.system_prompt)
+        except:
+            pass
+            
         self.history = [{"role": "system", "content": self.system_prompt}]
+        
+        # Inicializar el interceptor de eventos (middleware)
+        self.interceptor = EventInterceptor(tenant_id=tenant_id, session_id=session_id)
 
     def _resolve_references(self, text: str) -> str:
         import re
@@ -82,16 +102,27 @@ class SkillAgent:
         print(f"User: {user_message}")
         self.history.append({"role": "user", "content": user_message})
         
+        self.interceptor.emit(f"Procesando mensaje del usuario: {user_message[:50]}", "RUNNING")
+        print(f"🔄 Iniciando ciclo de procesamiento...", flush=True)
+        
         while True:
-            print("👤+💭 IA trabajando ...", flush=True)
+            self.interceptor.emit("Generando paso de razonamiento", "RUNNING")
+            print("👤+💭 Analizando y razonando...", flush=True)
+            
             # call LiteLLM completion with automatic retries
-            response = litellm.completion(
-                model=self.model,
-                messages=self.history,
-                tools=self.tools if self.tools else None,
-                tool_choice="auto" if self.tools else None,
-                num_retries=3
-            )
+            try:
+                response = litellm.completion(
+                    model=self.model,
+                    messages=self.history,
+                    tools=self.tools if self.tools else None,
+                    tool_choice="auto" if self.tools else None,
+                    num_retries=3
+                )
+                self.interceptor.emit("Razonamiento completado", "SUCCESS")
+                # print("✅ Razonamiento listo", flush=True)
+            except Exception as e:
+                self.interceptor.emit(f"Error en razonamiento LLM: {str(e)}", "ERROR")
+                raise e
             
             message = response.choices[0].message
             self.history.append(message)
@@ -108,12 +139,18 @@ class SkillAgent:
                             skill_name = skill.name
                             break
                     
+                    # Log interno vía interceptor (sin salida a consola)
+                    self.interceptor.emit(f"Invocando herramienta {tool_name} (Skill: {skill_name})", "RUNNING")
+                    
                     print(f"🎓 Usando skill {skill_name}", flush=True)
                     print(f"\t🛠️ {tool_name}", flush=True)
                     
                     try:
                         result = self.executor.execute(tool_name, args)
-                        print(f"Tool Result: {result}", flush=True)
+                        # print(f"Tool Result: {result}", flush=True) # Silenciado para terminal limpia
+                        
+                        self.interceptor.emit(f"Herramienta {tool_name} ejecutada con éxito", "SUCCESS")
+                        print(f"✅ Herramienta {tool_name} completada con éxito.", flush=True)
                         
                         # Add tool response to history
                         self.history.append({
@@ -124,6 +161,7 @@ class SkillAgent:
                         })
                     except Exception as e:
                         print(f"Error executing tool {tool_name}: {e}", flush=True)
+                        self.interceptor.emit(f"Error en herramienta {tool_name}: {str(e)}", "ERROR")
                         self.history.append({
                             "role": "tool",
                             "name": tool_name,
@@ -132,14 +170,22 @@ class SkillAgent:
                         })
             else:
                 final_text = message.content
+                
+                # Patrón Claim Check para la respuesta del asistente (si es muy larga)
+                final_text = self.executor.artifact_manager.save_if_needed("assistant_response", final_text)
+                
                 print(f"Assistant: {final_text}", flush=True)
+                self.interceptor.emit("Respuesta final generada y enviada al usuario", "SUCCESS")
                 return final_text
 
 def main():
     # Verificar API Key (dependiendo del provider)
     # LiteLLM las toma de las variables de entorno estándar si existen
     
-    agent = SkillAgent()
+    agent = SkillAgent(
+        tenant_id=os.getenv("TENANT_ID"),
+        session_id=os.getenv("SESSION_ID")
+    )
     
     print(f"Agente iniciado con LiteLLM usando: {agent.model}")
     print(f"Skills cargados: {len(agent.skills)} | Herramientas disponibles: {len(agent.tools)}")
@@ -176,7 +222,10 @@ def main():
                             os.environ[key] = value
 
                 # Re-instanciar el agente para refrescar skills y parámetros
-                agent = SkillAgent()
+                agent = SkillAgent(
+                    tenant_id=os.getenv("TENANT_ID"),
+                    session_id=os.getenv("SESSION_ID")
+                )
                 print(f"Recarga completada. Proveedor: {agent.provider} | Modelo: {agent.model}")
                 continue
                 
@@ -254,8 +303,92 @@ def main():
                 print("  /confidential - Muestra la API Key enmascarada del proveedor actual.")
                 print("  /history      - Muestra el historial de la conversación actual.")
                 print("  /clear        - Limpia el historial de la conversación.")
+                print("  /redis [st] [l]- Explora el stream [st] de Redis con límite [l].")
+                print("  /artifacts [ID|clear]- Explora, recupera o limpia artefactos.")
                 print("  exit | quit   - Sale de la aplicación.")
                 print("------------------------------------\n")
+                continue
+
+            if user_input.lower().startswith("/redis"):
+                parts = user_input.split()
+                stream = parts[1] if len(parts) > 1 else os.getenv("REDIS_STREAM_NAME", "agent_events")
+                try:
+                    limit = int(parts[2]) if len(parts) > 2 else 10
+                except ValueError:
+                    limit = 10
+                
+                print(f"\n--- Explorando Redis Stream: {stream} (Límite: {limit}) ---")
+                try:
+                    r = redis.Redis(
+                        host=os.getenv("REDIS_HOST", "localhost"),
+                        port=int(os.getenv("REDIS_PORT", 6379)),
+                        password=os.getenv("REDIS_PASSWORD"),
+                        decode_responses=True
+                    )
+                    # Leer eventos en orden inverso para ver los más recientes primero
+                    events = r.xrevrange(stream, count=limit)
+                    if not events:
+                        print("No se encontraron eventos en el stream.")
+                    for event_id, data in events:
+                        ts = data.get("timestamp", "N/A")
+                        # Acortar timestamp si es ISO largo
+                        ts_short = ts.split(".")[0].replace("T", " ") if "T" in ts else ts
+                        status = data.get("status", "N/A")
+                        desc = data.get("step_description", "N/A")
+                        tenant = data.get("tenant_id", "N/A")
+                        print(f"[{ts_short}] [{status}] {tenant}: {desc}")
+                except Exception as e:
+                    print(f"Error consultando Redis: {e}")
+                print("-------------------------------------------\n")
+                continue
+
+            if user_input.lower().startswith("/artifacts"):
+                parts = user_input.split()
+                target_id = parts[1] if len(parts) > 1 else None
+                hash_name = "agent_artifacts"
+                
+                try:
+                    r = redis.Redis(
+                        host=os.getenv("REDIS_HOST", "localhost"),
+                        port=int(os.getenv("REDIS_PORT", 6379)),
+                        password=os.getenv("REDIS_PASSWORD"),
+                        decode_responses=True
+                    )
+                    
+                    if target_id == "clear":
+                        r.delete(hash_name)
+                        print(f"Almacenamiento de artefactos '{hash_name}' limpiado correctamente.")
+                    elif not target_id:
+                        print(f"\n--- Listado de Artefactos (Hash: {hash_name}) ---")
+                        keys = r.hkeys(hash_name)
+                        if not keys:
+                            print("No se encontraron artefactos guardados.")
+                        else:
+                            for k in keys:
+                                raw_data = r.hget(hash_name, k)
+                                try:
+                                    data = json.loads(raw_data)
+                                    tool = data.get("origin_tool", "unknown")
+                                    ts = data.get("timestamp", "N/A").split("-")[0] # Simplificar UUID/TS
+                                    print(f"  ID: {k} | Herramienta: {tool} | Ref: {ts}")
+                                except:
+                                    print(f"  ID: {k} (Error parseando metadatos)")
+                        print("Usa '/artifacts [id]' para ver el contenido completo.")
+                    else:
+                        print(f"\n--- Contenido del Artefacto: {target_id} ---")
+                        raw_data = r.hget(hash_name, target_id)
+                        if not raw_data:
+                            print(f"Error: Artefacto {target_id} no encontrado.")
+                        else:
+                            try:
+                                data = json.loads(raw_data)
+                                # Mostrar contenido de forma bonita
+                                print(json.dumps(data.get("content", data), indent=2, ensure_ascii=False))
+                            except:
+                                print(raw_data)
+                except Exception as e:
+                    print(f"Error consultando artefactos en Redis: {e}")
+                print("----------------------------------------------\n")
                 continue
 
             if user_input.lower() == "/history":

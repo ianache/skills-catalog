@@ -38,6 +38,20 @@
                 },
                 "required": ["query"]
             }
+        },
+        {
+            "name": "read_artifact",
+            "description": "Recuperar el contenido completo de un artefacto almacenado en Redis mediante su ID de referencia.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "artifact_id": {
+                        "type": "string",
+                        "description": "El ID del artefacto (ej: 1f108345...)."
+                    }
+                },
+                "required": ["artifact_id"]
+            }
         }
     ]
 }

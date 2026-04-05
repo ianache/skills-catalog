@@ -25,22 +25,6 @@
                     "specification"
                 ]
             }
-        },
-        {
-            "name": "search_knowledge_base",
-            "description": "Busca en la base de conocimiento para obtener informacion sobre el tema de la userstory.",
-            "input_schema": {
-                "type": "object",
-                "properties": {
-                    "topic": {
-                        "type": "string",
-                        "description": "tema de interes"
-                    }
-                },
-                "required": [
-                    "topic"
-                ]
-            }
         }
     ]
 }
