@@ -95,7 +95,17 @@ class SkillAgent:
                 for tool_call in message["tool_calls"]:
                     tool_name = tool_call.function.name
                     args = json.loads(tool_call.function.arguments)
-                    print(f"Tool Call: {tool_name}({args})")
+                    
+                    # Encontrar a qué skill pertenece la herramienta
+                    skill_name = "Desconocido"
+                    for skill in self.skills:
+                        if any(t["name"] == tool_name for t in skill.tools):
+                            skill_name = skill.name
+                            break
+                    
+                    print(f"🎓 Usando skill {skill_name}")
+                    print(f"\t🛠️ {tool_name}")
+                    # print(f"Tool Call: {tool_name}({args})") # Opcional: mantener para debug o remover
                     
                     try:
                         result = self.executor.execute(tool_name, args)
@@ -190,23 +200,24 @@ def main():
                     "anthropic": "ANTHROPIC_API_KEY"
                 }
                 key_env = key_map.get(provider)
-                if not key_env and provider == "gemini": # Fallback común
+                if provider == "gemini" and not os.getenv("GEMINI_API_KEY"):
                     key_env = "GOOGLE_API_KEY"
                 
-                if key_env:
-                    val = os.getenv(key_env)
-                    if val:
-                        if len(val) > 10:
-                            masked = f"{val[:5]}{'*' * (len(val)-10)}{val[-5:]}"
-                        else:
-                            masked = val # Demasiado corta para enmascarar así
-                        print(f"Proveedor: {provider}")
-                        print(f"Variable: {key_env}")
-                        print(f"API Key: {masked}")
+                val = os.getenv(key_env) if key_env else None
+                
+                if val:
+                    # Enmascaramiento: Mostrar 5 primeros y 5 últimos
+                    if len(val) > 10:
+                        masked = f"{val[:5]}{'*' * (len(val)-10)}{val[-5:]}"
                     else:
-                        print(f"Error: La variable {key_env} no está configurada.")
+                        masked = f"{val[:2]}...{val[-2:]}" if len(val) > 4 else "****"
+                    
+                    print(f"Proveedor Actual: {provider}")
+                    print(f"Variable de Entorno: {key_env}")
+                    print(f"Valor Detectado: {masked} (Largo: {len(val)})")
                 else:
-                    print(f"Proveedor '{provider}' no tiene mapeo de API Key definido.")
+                    print(f"Error: No se encontró valor para la key del proveedor '{provider}'")
+                    print(f"Intenté con: {key_env}")
                 print("--------------------------------\n")
                 continue
 
