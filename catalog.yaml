@@ -23,3 +23,9 @@ skills:
     status: active
     path: calculator
     author: Ilver Anache
+  - name: qdrant_kb
+    description: Gestión de base de conocimientos vectorial en Qdrant (mykb) para almacenamiento y búsqueda semántica
+    version: 1.0.0
+    status: active
+    path: qdrant_kb
+    author: Ilver Anache

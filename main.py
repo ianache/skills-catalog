@@ -81,12 +81,13 @@ class SkillAgent:
         
         while True:
             print("👤+💭 IA trabajando ...", flush=True)
-            # call LiteLLM completion
+            # call LiteLLM completion with automatic retries
             response = litellm.completion(
                 model=self.model,
                 messages=self.history,
                 tools=self.tools if self.tools else None,
-                tool_choice="auto" if self.tools else None
+                tool_choice="auto" if self.tools else None,
+                num_retries=3
             )
             
             message = response.choices[0].message

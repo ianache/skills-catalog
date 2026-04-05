@@ -24,13 +24,17 @@ def execute(text: str, metadata: Dict[str, Any] = None) -> Dict[str, Any]:
         # 2. Conectar a Qdrant
         client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
         
-        # 3. Asegurar que la colección existe
-        collections = client.get_collections().collections
-        if not any(c.name == collection_name for c in collections):
+        # 3. Asegurar que la colección existe y está correctamente configurada
+        try:
+            client.get_collection(collection_name)
+        except Exception:
+            # Si falla, asumimos que no existe y la creamos
             client.create_collection(
                 collection_name=collection_name,
                 vectors_config=VectorParams(size=vector_size, distance=Distance.COSINE),
             )
+            # Opcional: Crear índices de carga útil (payload) para búsqueda más rápida en metadatos
+            # client.create_payload_index(collection_name, "metadata.id_proyecto", "keyword")
         
         # 4. Upsert el punto
         point_id = str(uuid.uuid4())
