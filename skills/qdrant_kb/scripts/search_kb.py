@@ -10,7 +10,7 @@ def execute(query: str, limit: int = 3) -> Dict[str, Any]:
     """
     qdrant_url = os.getenv("QDRANT_URL", ":memory:")
     qdrant_api_key = os.getenv("QDRANT_API_KEY")
-    emb_model = os.getenv("EMBEDDING_MODEL", "openai/text-embedding-3-small")
+    emb_model = os.getenv("EMBEDDING_MODEL", "gemini/text-embedding-004")
     collection_name = "mykb"
     
     try:
