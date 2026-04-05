@@ -1,0 +1,46 @@
+import os
+import json
+import litellm
+from qdrant_client import QdrantClient
+from typing import Dict, Any, List
+
+def execute(query: str, limit: int = 3) -> Dict[str, Any]:
+    """
+    Realiza búsqueda semántica en Qdrant.
+    """
+    qdrant_url = os.getenv("QDRANT_URL", ":memory:")
+    qdrant_api_key = os.getenv("QDRANT_API_KEY")
+    emb_model = os.getenv("EMBEDDING_MODEL", "openai/text-embedding-3-small")
+    collection_name = "mykb"
+    
+    try:
+        # 1. Generar Embedding de la consulta usando LiteLLM
+        response = litellm.embedding(model=emb_model, input=[query])
+        query_vector = response.data[0]['embedding']
+        
+        # 2. Conectar a Qdrant
+        client = QdrantClient(url=qdrant_url, api_key=qdrant_api_key)
+        
+        # 3. Buscar
+        search_result = client.search(
+            collection_name=collection_name,
+            query_vector=query_vector,
+            limit=limit
+        )
+        
+        results = []
+        for hit in search_result:
+            results.append({
+                "score": hit.score,
+                "text": hit.payload.get("text"),
+                "metadata": hit.payload.get("metadata")
+            })
+            
+        return {
+            "status": "success",
+            "count": len(results),
+            "results": results
+        }
+        
+    except Exception as e:
+        return {"error": f"Error en Qdrant Search: {str(e)}"}

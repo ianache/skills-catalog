@@ -1,0 +1,43 @@
+{
+    "name": "qdrant_kb",
+    "description": "Gestión de base de conocimientos en Qdrant (colección mykb)",
+    "tools": [
+        {
+            "name": "upsert_kb_document",
+            "description": "Indexar un nuevo documento o actualizar uno existente en la base de conocimientos 'mykb'.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "text": {
+                        "type": "string",
+                        "description": "El contenido textual del documento a indexar."
+                    },
+                    "metadata": {
+                        "type": "object",
+                        "description": "Metadatos adicionales (ej: autor, fecha, categoría, id_proyecto)."
+                    }
+                },
+                "required": ["text"]
+            }
+        },
+        {
+            "name": "search_kb",
+            "description": "Buscar información relevante en la base de conocimientos 'mykb' mediante búsqueda semántica.",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "query": {
+                        "type": "string",
+                        "description": "La consulta o pregunta del usuario."
+                    },
+                    "limit": {
+                        "type": "integer",
+                        "description": "Número máximo de resultados a devolver.",
+                        "default": 3
+                    }
+                },
+                "required": ["query"]
+            }
+        }
+    ]
+}

@@ -80,6 +80,7 @@ class SkillAgent:
         self.history.append({"role": "user", "content": user_message})
         
         while True:
+            print("👤+💭 IA trabajando ...", flush=True)
             # call LiteLLM completion
             response = litellm.completion(
                 model=self.model,
@@ -103,13 +104,12 @@ class SkillAgent:
                             skill_name = skill.name
                             break
                     
-                    print(f"🎓 Usando skill {skill_name}")
-                    print(f"\t🛠️ {tool_name}")
-                    # print(f"Tool Call: {tool_name}({args})") # Opcional: mantener para debug o remover
+                    print(f"🎓 Usando skill {skill_name}", flush=True)
+                    print(f"\t🛠️ {tool_name}", flush=True)
                     
                     try:
                         result = self.executor.execute(tool_name, args)
-                        print(f"Tool Result: {result}")
+                        print(f"Tool Result: {result}", flush=True)
                         
                         # Add tool response to history
                         self.history.append({
@@ -119,7 +119,7 @@ class SkillAgent:
                             "content": json.dumps(result)
                         })
                     except Exception as e:
-                        print(f"Error executing tool {tool_name}: {e}")
+                        print(f"Error executing tool {tool_name}: {e}", flush=True)
                         self.history.append({
                             "role": "tool",
                             "name": tool_name,
@@ -128,7 +128,7 @@ class SkillAgent:
                         })
             else:
                 final_text = message.content
-                print(f"Assistant: {final_text}")
+                print(f"Assistant: {final_text}", flush=True)
                 return final_text
 
 def main():
@@ -138,6 +138,7 @@ def main():
     agent = SkillAgent()
     
     print(f"Agente iniciado con LiteLLM usando: {agent.model}")
+    print(f"Skills cargados: {len(agent.skills)} | Herramientas disponibles: {len(agent.tools)}")
     print("Escriba su consulta, '/help' para ver comandos, o 'exit' para salir.")
     
     while True:
@@ -151,8 +152,9 @@ def main():
                 
             if user_input.lower() == "/reload":
                 print("Recargando configuración y skills...")
-                # Recargar .env permitiendo sobrescribir las variables actuales
-                load_dotenv(override=True)
+                # Recargar .env. Usar override=False para que las variables de entorno del shell 
+                # mantengan su prioridad sobre las del archivo .env.
+                load_dotenv(override=False)
                 # Re-instanciar el agente para refrescar skills y parámetros
                 agent = SkillAgent()
                 print(f"Recarga completada. Modelo actual: {agent.model}")
