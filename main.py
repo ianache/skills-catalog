@@ -6,6 +6,9 @@ from skill_loader import load_skills
 from tool_executor import ToolExecutor
 from typing import List, Dict, Any
 
+# Guardar captura del entorno inicial para respetar variables del shell
+initial_env = os.environ.copy()
+
 # Cargar .env sin sobrescribir variables ya definidas en el entorno
 load_dotenv(override=False)
 
@@ -153,12 +156,28 @@ def main():
                 
             if user_input.lower() == "/reload":
                 print("Recargando configuración y skills...")
-                # Recargar .env. Usar override=False para que las variables de entorno del shell 
-                # mantengan su prioridad sobre las del archivo .env.
-                load_dotenv(override=False)
+                
+                # Cargar .env manualmente para poder filtrar valores
+                from tqdm import tqdm # No necesaria, solo por consistencia de imports si hubiera
+                from dotenv import dotenv_values
+                
+                new_env = dotenv_values(".env")
+                for key, value in new_env.items():
+                    # No sobrescribir si el nuevo valor es un placeholder o está vacío
+                    # y ya tenemos algo útil en el entorno.
+                    placeholders = ["changeme", "your_token_here", ""]
+                    current_val = os.environ.get(key, "")
+                    
+                    if value and value not in placeholders:
+                        os.environ[key] = value
+                    elif not current_val or current_val in placeholders:
+                        # Si no tenemos nada útil, aceptamos lo que venga (aunque sea placeholder)
+                        if value:
+                            os.environ[key] = value
+
                 # Re-instanciar el agente para refrescar skills y parámetros
                 agent = SkillAgent()
-                print(f"Recarga completada. Modelo actual: {agent.model}")
+                print(f"Recarga completada. Proveedor: {agent.provider} | Modelo: {agent.model}")
                 continue
                 
             if user_input.lower() == "/settings":
@@ -168,6 +187,8 @@ def main():
                 print(f"Modelo LiteLLM: {agent.model}")
                 print(f"Directorio de Skills: {agent.skills_dir}")
                 print(f"Skills cargados: {', '.join([s.name for s in agent.skills])}")
+                print(f"Base de Conocimientos (Qdrant): {os.getenv('QDRANT_URL', ':memory:')}")
+                print(f"Modelo de Embedding: {os.getenv('EMBEDDING_MODEL', 'n/a')}")
                 
                 # Opcional: mostrar qué API keys están presentes (enmascaradas)
                 keys_to_check = ["GEMINI_API_KEY", "GROQ_API_KEY", "OPENAI_API_KEY", "ANTHROPIC_API_KEY"]

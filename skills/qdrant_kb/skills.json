@@ -21,7 +21,7 @@
             }
         },
         {
-            "name": "search_kb",
+            "name": "search_knowledge_base",
             "description": "Buscar información relevante en la base de conocimientos 'mykb' mediante búsqueda semántica.",
             "parameters": {
                 "type": "object",

@@ -14,8 +14,18 @@ def execute(query: str, limit: int = 3) -> Dict[str, Any]:
     collection_name = "mykb"
     
     try:
+        # Asegurar compatibilidad de claves para Gemini
+        gen_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if gen_key:
+            os.environ["GOOGLE_API_KEY"] = gen_key
+            os.environ["GEMINI_API_KEY"] = gen_key
+        
         # 1. Generar Embedding de la consulta usando LiteLLM
-        response = litellm.embedding(model=emb_model, input=[query])
+        response = litellm.embedding(
+            model=emb_model, 
+            input=[query],
+            api_key=gen_key
+        )
         query_vector = response.data[0]['embedding']
         
         # 2. Conectar a Qdrant

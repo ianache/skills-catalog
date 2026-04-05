@@ -16,8 +16,18 @@ def execute(text: str, metadata: Dict[str, Any] = None) -> Dict[str, Any]:
     collection_name = "mykb"
     
     try:
+        # Asegurar compatibilidad de claves para Gemini
+        gen_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if gen_key:
+            os.environ["GOOGLE_API_KEY"] = gen_key
+            os.environ["GEMINI_API_KEY"] = gen_key
+
         # 1. Generar Embedding usando LiteLLM
-        response = litellm.embedding(model=emb_model, input=[text])
+        response = litellm.embedding(
+            model=emb_model, 
+            input=[text],
+            api_key=gen_key
+        )
         vector = response.data[0]['embedding']
         vector_size = len(vector)
         
