@@ -217,8 +217,27 @@ def main():
                 print("  /settings     - Muestra la configuración actual y estado de API Keys.")
                 print("  /skill(s)     - Lista todos los skills y sus herramientas disponibles.")
                 print("  /confidential - Muestra la API Key enmascarada del proveedor actual.")
+                print("  /history      - Muestra el historial de la conversación actual.")
+                print("  /clear        - Limpia el historial de la conversación.")
                 print("  exit | quit   - Sale de la aplicación.")
                 print("------------------------------------\n")
+                continue
+
+            if user_input.lower() == "/history":
+                print("\n--- Historial de Conversación ---")
+                for msg in agent.history:
+                    role = msg.get("role", "unknown")
+                    if role == "system": continue # Omitir prompt de sistema por brevedad
+                    content = msg.get("content", "")
+                    if msg.get("tool_calls"):
+                        content = f"[Tool Calls: {len(msg['tool_calls'])}]"
+                    print(f"[{role.upper()}]: {content[:100]}{'...' if len(str(content))>100 else ''}")
+                print("---------------------------------\n")
+                continue
+
+            if user_input.lower() == "/clear":
+                agent.history = [{"role": "system", "content": agent.system_prompt}]
+                print("Historial de conversación limpiado.")
                 continue
                 
             agent.process_message(user_input)
