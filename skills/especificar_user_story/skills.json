@@ -1,0 +1,46 @@
+{
+    "name": "evaluar_test_case_gitlab",
+    "tools": [
+        {
+            "name": "write_userstory",
+            "description": "registrar la especificacion de la historia de usuario en proyecto",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "type": "integer",
+                        "description": "id del proyecto en GitLab."
+                    },
+                    "issue_id": {
+                        "type": "integer",
+                        "description": "id del issue dentro del proyecto gitlab (opcional)."
+                    },
+                    "specification": {
+                        "type": "string",
+                        "description": "especificacion de la historia de usuario."
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "specification"
+                ]
+            }
+        },
+        {
+            "name": "search_knowledge_base",
+            "description": "Busca en la base de conocimiento para obtener informacion sobre el tema de la userstory.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "topic": {
+                        "type": "string",
+                        "description": "tema de interes"
+                    }
+                },
+                "required": [
+                    "topic"
+                ]
+            }
+        }
+    ]
+}

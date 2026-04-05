@@ -4,8 +4,22 @@ skills:
     version: 1.0.0
     status: active
     path: evaluar_test_case
+    author: Ilver Anache
+  - name: especificar_user_story
+    description: Especificar historias de usuario basadas en metodologia SCRUM
+    version: 1.0.0
+    status: active
+    path: especificar_user_story
+    author: Ilver Anache
+  - name: software_realiability_engineering
+    description: Evaluar la confiabilidad de un sistema de software
+    version: 1.0.0
+    status: active
+    path: software_realiability_engineering
+    author: Ilver Anache
   - name: calculator
     description: Skill dedicado a realizar operaciones matematicas basicas
     version: 1.0.0
     status: active
     path: calculator
+    author: Ilver Anache
