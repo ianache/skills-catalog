@@ -18,7 +18,7 @@ Este skill permite al agente interactuar con una base de conocimientos vectorial
 ## Instrucciones para el Agente
 
 1. Cuando el usuario proporcione información que deba ser recordada a largo plazo (lecciones aprendidas, requerimientos, glosarios), utiliza `upsert_kb_document`.
-2. Incluye siempre metadatos relevantes para facilitar la trazabilidad (ej: `id_proyecto`, `source`).
+2. Incluye siempre metadatos relevantes para facilitar la trazabilidad (ej: `id_proyecto`, `source`). Son metadatos obligatorios source, year, author.
 3. Antes de responder a una pregunta compleja sobre el dominio del proyecto, utiliza `search_knowledge_base` para verificar si hay información previa relevante.
 4. Si la búsqueda no devuelve resultados claros, indícalo al usuario.
 
