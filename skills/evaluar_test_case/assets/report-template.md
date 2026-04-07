@@ -3,10 +3,11 @@
 # Test Case Review Report
 
 Este reporte cubre la evaluación del caso de prueba siguiente:
-
-**Project ID**: [project_id] [project name]
-**Issue ID**: [issue_id or test_case_id]
-**Test Case**: [Test Case Code] [Test Case Name]
+|-|-|
+|-|-|
+|**Project ID**:|[project_id] [project name]|
+|**Issue ID**:|[issue_id or test_case_id]|
+|**Test Case**:|[Test Case Code] [Test Case Name]|
 
 ## Findings
 
@@ -22,13 +23,14 @@ Se debe aplicar las siguientes reglas:
 - Si existe almenos un finding de criticidad Media, se debe sugerir la modificación (MODIFY) del caso de prueba y requerir una siguiente revisión.
 - Si existe almenos un finding de criticidad Baja y no existe ningun finding de criticidad Alta o Media, se debe aceptar (ACEPT) pero recomendar mejoras del caso de prueba.
 
-## Approval Status
+## Approval Decision
 
-[ACEPT|REJECT|MODIFY]
+Status: **[APPROVED|REJECT|MODIFY]** (set a relevant emogi before the status)
+Razon: [Razon del estado]
 
 ## Next Steps
 
 - Si el estado es REJECT, se debe solicitar al usuario que corrija el caso de prueba y vuelva a enviarlo para su revisión.
 - Si el estado es MODIFY, se debe solicitar al usuario que corrija el caso de prueba y vuelva a enviarlo para su revisión.
-- Si el estado es ACEPT, se puede continuar con el siguiente paso del flujo de trabajo.
+- Si el estado es APPROVED, se puede continuar con el siguiente paso del flujo de trabajo.
 - Incluir el nombre del author del test case.

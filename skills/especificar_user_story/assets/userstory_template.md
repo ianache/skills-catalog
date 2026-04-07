@@ -32,4 +32,6 @@ Include a brief description of the business value of the user story.
 
 # **Fuentes de Referencia**
 
-- [Referencia a fuentes utilizadas]
+- [Referencia a fuentes utilizadas usando formato "nombre-fuente (nro de paginas si existe), [autor] [fecha de publicacion o creacion]"]
+
+> Nota importante: NUNCA inventes URLs, correos, nombres de personas. SI NO TIENE la información de la referencia a la fuente.

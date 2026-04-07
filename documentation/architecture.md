@@ -2,6 +2,8 @@
 
 Este informe técnico consolida nuestra sesión de diseño para la evolución de tu repositorio `skills-catalog`. Transicionamos de una implementación estática de **Google AI ADK** en Python hacia una **Plataforma Agéntica de Grado Empresarial** con observabilidad en tiempo real y persistencia robusta.
 
+![Arquitectura Global](images/sketch-architectura.png)
+
 ---
 
 ## Parte 1: Keypoints and Reflexions
@@ -58,11 +60,12 @@ Desglose Visual del Diagrama:
 
 4. Reactor Multi-tenant (Node.js/Socket.io): El Gateway de Node.js se suscribe a Redis, filtra por session_id y emite los eventos a los clientes correspondientes, garantizando que un usuario solo vea los pasos de su propio agente.
 
-Reflexión Final
+#### Reflexión Final
 
 Este diagrama visualiza cómo hemos abierto la "tubería de datos" de tus agentes. Ahora, cada skill de tu catálogo informa sobre su inicio, fin y resultado, permitiendo que la auditoría y la reactividad funcionen de forma nativa en tu arquitectura desatendida.
 
 ### REQ-02: Gestor de Artifacts y Claim Check
+
 > *"Crea un módulo `artifact_manager.py` que gestione la conexión a PostgreSQL. Si el retorno de un Skill en mi `skills-catalog` es un JSON extenso o texto > 2KB, guárdalo en la tabla `artifacts` y devuelve al Agente una referencia simplificada: `{"__ref": "UUID", "label": "Nombre del dato"}`. Asegúrate de que el Agente esté instruido para informar al usuario sobre este ID."*
 
 ![Diagrama 2](images/reqspec2.png)
@@ -80,7 +83,7 @@ Desglose Visual del Diagrama:
 4. Inyección: El agente recibe esta referencia en su contexto, permitiendo que la ventana de tokens se mantenga limpia.
 5. Notificación Reactiva: Se envía un evento ARTIFACT_GENERATED a Redis Streams (agent:events), permitiendo que el Gateway de Node.js notifique al frontend.
 
-Reflexión Final
+#### Reflexión Final
 
 Este diagrama visualiza cómo hemos resuelto el problema de la "Contaminación Cognitiva". Al no saturar la ventana de tokens de Gemini con datos pesados, el agente puede mantener la atención en la lógica y el razonamiento, ahorrando costos y mejorando la precisión. Tendrás una base de datos en Postgres con cada "Artifact" para cumplimiento (compliance) e historial completo de auditoría.
 
@@ -105,7 +108,7 @@ Desglose Visual del Diagrama:
 
 7. Sync on Connect: En la parte inferior, implementamos tu requerimiento de resiliencia. Si un usuario se conecta tarde, el Gateway pide un "Sync" a Redis (XRANGE), recupera la historia y la envía para que la línea de tiempo esté completa.
 
-Reflexión de Alter Ego:
+#### Reflexión Final
 
 Este diagrama visualiza cómo hemos logrado que la "inteligencia" de Python se encuentre con la "reactividad" de Node.js sin saturar tu base de datos relacional. El Gateway es ahora un dispatcher puro, rápido y agnóstico de la lógica de negocio de los agentes.
 
@@ -126,5 +129,6 @@ Desglose Visual del Diagrama:
 4.  Despertar del Agente: La señal de aprobación viaja de vuelta por Socket.io al Gateway, quien la inyecta en el canal de retorno de Redis. El motor Python lee la señal, "despierta" al agente y reanuda la ejecución con el nuevo contexto.
 5.  Watchdog Timeout: Hemos incluido el mecanismo de seguridad. Si el usuario no responde en X minutos, el agente falla de forma segura y se registra el evento.
 
-Reflexión Final
+#### Reflexión Final
+
 Este diagrama visualiza cómo hemos resuelto el problema de la Autonomía Peligrosa. Al tratar la "intervención humana" como un estado de red asíncrono, mantenemos la eficiencia de la plataforma y garantizamos la seguridad en procesos sensibles como despliegues o accesos a SAP.

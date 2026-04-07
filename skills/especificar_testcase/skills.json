@@ -1,0 +1,26 @@
+{
+    "name": "especificar_testcase",
+    "tools": [
+        {
+            "name": "publish_testcase",
+            "description": "Publica un caso de prueba en GitLab.",
+            "input_schema": {
+                "type": "object",
+                "properties": {
+                    "project_id": {
+                        "type": "integer",
+                        "description": "El ID numérico del proyecto en GitLab."
+                    },
+                    "specification": {
+                        "type": "string",
+                        "description": "La especificación del caso de prueba a publicar."
+                    }
+                },
+                "required": [
+                    "project_id",
+                    "specification"
+                ]
+            }
+        }
+    ]
+}

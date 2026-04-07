@@ -11,6 +11,12 @@ skills:
     status: active
     path: especificar_user_story
     author: Ilver Anache
+  - name: especificar_testcase
+    description: Especificar casos de prueba basados en metodologia SCRUM
+    version: 1.0.0
+    status: active
+    path: especificar_testcase
+    author: Ilver Anache
   - name: software_realiability_engineering
     description: Evaluar la confiabilidad de un sistema de software
     version: 1.0.0
