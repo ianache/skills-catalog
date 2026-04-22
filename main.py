@@ -18,7 +18,9 @@ initial_env = os.environ.copy()
 load_dotenv(override=False)
 
 # Configurar logs de litellm
-os.environ["LITELLM_LOG"] = "WARNING"
+os.environ["LITELLM_LOG"] = "INFO"
+
+# litellm._turn_on_debug()
 
 class SkillAgent:
     def __init__(self, skills_dir: str = None, model: str = None, provider: str = None, tenant_id: str = None, session_id: str = None):

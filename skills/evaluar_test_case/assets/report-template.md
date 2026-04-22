@@ -25,12 +25,16 @@ Se debe aplicar las siguientes reglas:
 
 ## Approval Decision
 
-Status: **[APPROVED|REJECT|MODIFY]** (set a relevant emogi before the status)
-Razon: [Razon del estado]
+|||
+|-|-|
+|**Status:**|**[APPROVED|REJECT|MODIFY]** (includes a relevant emogi before the status)|
+|**Razon:**|[Razon del estado]|
 
 ## Next Steps
 
+Aplica los siguientes criterios para definir los pasos siguientes:
 - Si el estado es REJECT, se debe solicitar al usuario que corrija el caso de prueba y vuelva a enviarlo para su revisión.
 - Si el estado es MODIFY, se debe solicitar al usuario que corrija el caso de prueba y vuelva a enviarlo para su revisión.
 - Si el estado es APPROVED, se puede continuar con el siguiente paso del flujo de trabajo.
-- Incluir el nombre del author del test case.
+
+> Autor: Incluir el nombre del author del test case.
