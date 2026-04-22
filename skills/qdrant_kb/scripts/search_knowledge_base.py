@@ -1,7 +1,9 @@
 import os
-import json
 import litellm
+litellm.suppress_debug_info = True
+litellm.drop_params = True
 from qdrant_client import QdrantClient
+
 from typing import Dict, Any, List
 
 def execute(query: str, limit: int = 3) -> Dict[str, Any]:

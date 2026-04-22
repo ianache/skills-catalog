@@ -1,0 +1,244 @@
+{
+  "name": "gitlab_manager",
+  "version": "1.0.0",
+  "description": "Skill to manage GitLab groups, users, and issues",
+  "tools": [
+    {
+      "name": "list_groups",
+      "description": "List GitLab groups",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Search string to filter groups"
+          }
+        }
+      }
+    },
+    {
+      "name": "get_group",
+      "description": "Get a specific GitLab group by ID",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "group_id": {
+            "type": "integer",
+            "description": "The ID of the group"
+          }
+        },
+        "required": ["group_id"]
+      }
+    },
+    {
+      "name": "create_group",
+      "description": "Create a new GitLab group",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the group"
+          },
+          "path": {
+            "type": "string",
+            "description": "The path of the group"
+          },
+          "parent_id": {
+            "type": "integer",
+            "description": "The ID of the parent group, if any"
+          }
+        },
+        "required": ["name", "path"]
+      }
+    },
+    {
+      "name": "list_projects",
+      "description": "List GitLab projects",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Search string to filter projects"
+          },
+          "group_id": {
+            "type": "integer",
+            "description": "Filter projects by group ID"
+          }
+        }
+      }
+    },
+    {
+      "name": "list_users",
+      "description": "List GitLab users",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "search": {
+            "type": "string",
+            "description": "Search string to filter users"
+          },
+          "username": {
+            "type": "string",
+            "description": "Filter users by username"
+          }
+        }
+      }
+    },
+    {
+      "name": "list_issues",
+      "description": "List issues from a project or group",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "The ID of the project"
+          },
+          "group_id": {
+            "type": "integer",
+            "description": "The ID of the group"
+          },
+          "state": {
+            "type": "string",
+            "description": "Filter by state (opened, closed, all)",
+            "enum": ["opened", "closed", "all"]
+          },
+          "search": {
+            "type": "string",
+            "description": "Search string to filter issues"
+          }
+        }
+      }
+    },
+    {
+      "name": "create_issue",
+      "description": "Create a new GitLab issue",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "The ID of the project"
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the issue"
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the issue"
+          },
+          "labels": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of labels for the issue"
+          },
+          "assignee_ids": {
+            "type": "array",
+            "items": { "type": "integer" },
+            "description": "IDs of the users to assign the issue to"
+          }
+        },
+        "required": ["project_id", "title"]
+      }
+    },
+    {
+      "name": "update_issue",
+      "description": "Update an existing GitLab issue",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "The ID of the project"
+          },
+          "issue_iid": {
+            "type": "integer",
+            "description": "The internal ID (IID) of the issue"
+          },
+          "title": {
+            "type": "string",
+            "description": "New title for the issue"
+          },
+          "description": {
+            "type": "string",
+            "description": "New description for the issue"
+          },
+          "state_event": {
+            "type": "string",
+            "description": "State event (close, reopen)",
+            "enum": ["close", "reopen"]
+          },
+          "labels": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of labels for the issue"
+          }
+        },
+        "required": ["project_id", "issue_iid"]
+      }
+    },
+    {
+      "name": "list_milestones",
+      "description": "List milestones from a project or group",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "The ID of the project"
+          },
+          "group_id": {
+            "type": "integer",
+            "description": "The ID of the group"
+          },
+          "state": {
+            "type": "string",
+            "description": "Filter by state (active, closed)",
+            "enum": ["active", "closed"]
+          },
+          "search": {
+            "type": "string",
+            "description": "Search string to filter milestones"
+          }
+        }
+      }
+    },
+    {
+      "name": "create_milestone",
+      "description": "Create a new milestone for a project or group",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "project_id": {
+            "type": "integer",
+            "description": "The ID of the project"
+          },
+          "group_id": {
+            "type": "integer",
+            "description": "The ID of the group"
+          },
+          "title": {
+            "type": "string",
+            "description": "The title of the milestone"
+          },
+          "description": {
+            "type": "string",
+            "description": "The description of the milestone"
+          },
+          "start_date": {
+            "type": "string",
+            "description": "The start date of the milestone (YYYY-MM-DD)"
+          },
+          "due_date": {
+            "type": "string",
+            "description": "The due date of the milestone (YYYY-MM-DD)"
+          }
+        },
+        "required": ["title"]
+      }
+    }
+  ]
+}

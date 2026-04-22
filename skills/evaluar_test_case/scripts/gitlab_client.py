@@ -57,7 +57,7 @@ class GitLabClient:
         session: Sesión HTTP para reutilizar conexiones
     """
     
-    def __init__(self, base_url: str = "https://projects.comsatel.com.pe", private_token: Optional[str] = None):
+    def __init__(self, base_url: str = "https://project.comsatel.com.pe", private_token: Optional[str] = None):
         """
         Inicializa el cliente de GitLab.
         
@@ -248,7 +248,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--url",
         type=str,
-        default="https://projects.comsatel.com.pe",
+        default="https://project.comsatel.com.pe",
         help="URL base de GitLab"
     )
     

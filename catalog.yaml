@@ -35,3 +35,9 @@ skills:
     status: active
     path: qdrant_kb
     author: Ilver Anache
+  - name: gitlab_manager
+    description: Skill para gestionar grupos, usuarios e issues en GitLab
+    version: 1.0.0
+    status: active
+    path: gitlab_manager
+    author: Ilver Anache

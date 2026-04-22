@@ -1,8 +1,10 @@
 import os
-import json
 import uuid
 import litellm
+litellm.suppress_debug_info = True
+litellm.drop_params = True
 from qdrant_client import QdrantClient
+
 from qdrant_client.http.models import Distance, VectorParams, PointStruct
 from typing import Dict, Any
 

@@ -19,6 +19,8 @@ load_dotenv(override=False)
 
 # Configurar logs de litellm
 os.environ["LITELLM_LOG"] = "INFO"
+litellm.suppress_debug_info = True
+litellm.drop_params = True
 
 # litellm._turn_on_debug()
 
