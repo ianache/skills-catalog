@@ -5,39 +5,66 @@ skills:
     status: active
     path: evaluar_test_case
     author: Ilver Anache
+    tags:
+      - test
+      - test case
+      - quality
+      - assessment
   - name: especificar_user_story
     description: Especificar historias de usuario basadas en metodologia SCRUM
     version: 1.0.0
     status: active
     path: especificar_user_story
     author: Ilver Anache
+    tags:
+      - user story
+      - specification
   - name: especificar_testcase
     description: Especificar casos de prueba basados en metodologia SCRUM
     version: 1.0.0
     status: active
     path: especificar_testcase
     author: Ilver Anache
+    tags:
+      - test
+      - test case
+      - specification
   - name: software_realiability_engineering
     description: Evaluar la confiabilidad de un sistema de software
     version: 1.0.0
     status: active
     path: software_realiability_engineering
     author: Ilver Anache
+    tags:
+      - sre
+      - vulnerability
+      - iso 27001
+      - owasp
   - name: calculator
     description: Skill dedicado a realizar operaciones matematicas basicas
     version: 1.0.0
     status: active
     path: calculator
     author: Ilver Anache
+    tags:
+      - calculate    
   - name: qdrant_kb
     description: Gestión de base de conocimientos vectorial en Qdrant (mykb) para almacenamiento y búsqueda semántica
     version: 1.0.0
     status: active
     path: qdrant_kb
     author: Ilver Anache
+    tags:
+      - knowledge
+      - semantic search
   - name: gitlab_manager
     description: Skill para gestionar grupos, usuarios e issues en GitLab
     version: 1.0.0
     status: active
     path: gitlab_manager
     author: Ilver Anache
+    tags:
+      - gitlab
+      - issue
+      - user
+      - user group
