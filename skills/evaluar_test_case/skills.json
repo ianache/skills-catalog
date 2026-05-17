@@ -1,5 +1,6 @@
 {
     "name": "evaluar_test_case_gitlab",
+    "allow_net_domains": ["project.comsatel.com.pe"]
     "tools": [
         {
             "name": "get_gitlab_test_case",
