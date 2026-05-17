@@ -10,6 +10,7 @@ skills:
       - test case
       - quality
       - assessment
+      - gitlab
   - name: especificar_user_story
     description: Especificar historias de usuario basadas en metodologia SCRUM
     version: 1.0.0
@@ -19,6 +20,7 @@ skills:
     tags:
       - user story
       - specification
+      - gitlab
   - name: especificar_testcase
     description: Especificar casos de prueba basados en metodologia SCRUM
     version: 1.0.0
@@ -29,6 +31,7 @@ skills:
       - test
       - test case
       - specification
+      - gitlab
   - name: software_realiability_engineering
     description: Evaluar la confiabilidad de un sistema de software
     version: 1.0.0
@@ -57,6 +60,7 @@ skills:
     tags:
       - knowledge
       - semantic search
+      - qdrant
   - name: gitlab_manager
     description: Skill para gestionar grupos, usuarios e issues en GitLab
     version: 1.0.0
